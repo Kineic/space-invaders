@@ -413,6 +413,7 @@ public class Game extends Canvas {
 			//If we hit escape, then quit the game
 			
 			if (e.getKeyChar() == 27) {
+				notifyWin();
 				System.exit(0);
 			}
 		}
