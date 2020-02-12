@@ -14,7 +14,9 @@ import java.util.ArrayList;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import org.w3c.dom.Entity;
+import com.spaceinvaders.mechanics.Entity;
+
+import com.spaceinvaders.mechanics.GameStart;
 
 public class Game extends Canvas {
 	//The strategy that allows us to use accelerate page flipping.
@@ -22,9 +24,9 @@ public class Game extends Canvas {
 	//True if the game is currently "running", ie. the game loop is looping.
 	private boolean gameRunning = true;
 	//The list of all the entities that exist in our game.
-	private ArrayList entities;
+	private ArrayList<Entity> entities = new ArrayList();
 	//The list of entities that need to be removed in this loop.
-	private ArrayList removeList = new ArrayList();
+	private ArrayList<Entity> removeList = new ArrayList<Entity>();
 	//The entity representing the player.
 	private Entity ship;
 	//The speed in which the players ship should move (pixels/sec).
@@ -41,9 +43,9 @@ public class Game extends Canvas {
 	//True if we are holding up game play until a key is pressed.
 	private boolean waitingForKeyPress = true;
 	//True if the left cursor key is currently pressed.
-	private boolean leftPressed = false;
+	private boolean aPressed = false;
 	//True if the right cursor is currently pressed.
-	private boolean rightPressed = false;
+	private boolean dPressed = false;
 	//True if we are firing.
 	private boolean firePressed = false;
 	//True if game logic needs to be applied this loop, normally as a result of a game event.
@@ -98,7 +100,7 @@ public class Game extends Canvas {
 		createBufferStrategy(2);
 		strategy = getBufferStrategy();
 		
-		//Initialise the entities in our game so there's something to see at startup.
+		//Initialize the entities in our game so there's something to see at startup.
 		
 		initEntities();	
 	}
@@ -106,23 +108,23 @@ public class Game extends Canvas {
 	//Start a fresh game, this should clear out any old data and create a new set.
 	
 	private void startGame() {
-		//Clear out any existing entities and initialise a new set
+		//Clear out any existing entities and initialize a new set
 		
 		entities.clear();
 		initEntities();
 		
 		//Blank out any keyboard settings we might currently have.
 		
-		leftPressed = false;
-		rightPressed = false;
+		aPressed = false;
+		dPressed = false;
 		firePressed = false;
 	}
 	
-	//Initialise the starting state of the entities (ship and aliens). Each entity will
+	//Initialize the starting state of the entities (ship and aliens). Each entity will
 	//be added to the overall list of entities in the game.
 	
-	private void initEntities() {
-		//Create the player ship and place it roughly in the centre of the screen.
+	protected void initEntities() {
+		//Create the player ship and place it roughly in the center of the screen.
 		
 		ship = new ShipEntity(this, "sprites/ship.gif", 370, 550);
 		entities.add(ship);
@@ -207,7 +209,7 @@ public class Game extends Canvas {
 		//If we have waited long enough, create the shot entity, and record the time.
 		
 		lastFire = System.currentTimeMillis();
-		ShotEntity shot = new ShotEntity(this, "sprites/shot.gif", ship.getX() + 10, ship.geyY() - 30);
+		ShotEntity shot = new ShotEntity(this, "sprites/shot.gif", ship.getX() + 10, ship.getY() - 30);
 		entities.add(shot);
 	}
 	
@@ -299,9 +301,9 @@ public class Game extends Canvas {
 			
 			ship.setHorizontalMovement(0);
 			
-			if ((leftPressed) && (!rightPressed)) {
+			if ((aPressed) && (!dPressed)) {
 				ship.setHorizontalMovement(-moveSpeed);
-			} else if ((rightPressed) && (!leftPressed)) {
+			} else if ((dPressed) && (!aPressed)) {
 				ship.setHorizontalMovement(moveSpeed);
 			}
 			
@@ -348,11 +350,11 @@ public class Game extends Canvas {
 			}
 			
 			if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-				leftPressed = true;
+				aPressed = true;
 			}
 			
 			if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-				rightPressed = true;
+				dPressed = true;
 			}
 			
 			if (e.getKeyCode() == KeyEvent.VK_SPACE) {
@@ -373,11 +375,11 @@ public class Game extends Canvas {
 			}
 			
 			if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-				leftPressed = false;
+				aPressed = false;
 			}
 			
 			if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-				rightPressed = false;
+				dPressed = false;
 			}
 			
 			if (e.getKeyCode() == KeyEvent.VK_SPACE) {
@@ -414,19 +416,5 @@ public class Game extends Canvas {
 				System.exit(0);
 			}
 		}
-	}
-	
-	/*
-	 * The entry point into the game. We'll simply create an instance of a Class which will
-	 * start the display and game loop.
-	 */
-	
-	public static void main(String[] args) {
-		Game g = new Game();
-		
-		//Start the main game loop, note: this method will not return until the game has
-		//finished running. Hence we are using the actual main thread to run the game.
-		
-		g.gameLoop();
 	}
 }
